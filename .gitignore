@@ -1,3 +1,10 @@
+dataset/*
+faceShape-4/*
+shapeofyou-2/*
+cropped_ds/*
+logs/*
+.checkpoints/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
