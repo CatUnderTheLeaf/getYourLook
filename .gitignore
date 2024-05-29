@@ -2,8 +2,13 @@ dataset/*
 faceShape-4/*
 shapeofyou-2/*
 cropped_ds/*
+augmented_ds/*
 logs/*
 .checkpoints/*
+
+# model and weight files
+*.keras
+*.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
