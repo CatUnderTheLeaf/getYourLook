@@ -1,10 +1,10 @@
-colorPalette/dataset/
-faceShape/shapeofyou-2/*
-faceShape/cropped_ds/*
-faceShape/augmented_ds/*
-faceShape/logs/train/*
-faceShape/logs/validation/*
-faceShape/.checkpoints/*
+color_palette/dataset/
+face_shape/shapeofyou-2/*
+face_shape/cropped_ds/*
+face_shape/augmented_ds/*
+face_shape/logs/train/*
+face_shape/logs/validation/*
+face_shape/.checkpoints/*
 
 # model and weight files
 *.keras
