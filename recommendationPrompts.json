@@ -1,0 +1,168 @@
+{
+    "round": {
+        "faceShape": "round",
+        "bangs": [
+            "no bangs",
+            "side swept",
+            "swoopy bangs with cropped sides"
+        ],
+        "haircut": {
+            "short": [
+                "pixie bob",
+                "stacked pixie",
+                "asymmetrical pixie",
+                "ear-framing pixie",
+                "undercut pixie",
+                "mohawk pixie",
+                "crew cut pixie"
+            ],
+            "medium": [
+                "chin-length bob, straight hair, blunt",
+                "a-line bob, straight hair",
+                "stacked bob, straight hair",
+                "layered bob",
+                "asymmetrical bob, straight hair",
+                "shaggy bob",
+                "long bob, straight hair",
+                "layered bob"
+            ],
+            "long": [
+                "straight hair",
+                "long voluminous waves",
+                "layered",
+                "asymmetrical, straight hair"
+            ]
+        },
+        "does": [
+            "A hairstyle with a strong angular front and adding height will help to elongate the face",
+            "Avoid over softening this already round shape and avoid creating more width on sides. This will accentuate the shape further",
+            "It's best to leave your hair down and avoid tucking it behind your ears",
+            "The main trick of this hairstyle is the long strands in the front, falling below the chin line. They should be straight (if necessary, you can pull them out with a flat iron)"
+        ],
+        "donts": [
+            "No straight parting in the center (if there is a parting, then oblique and from the side)",
+            "No slicked-back hair - it should fall in front of the face",
+            "No ball hairstyles"
+        ]
+    },
+    "heart": {
+        "faceShape": "heart",
+        "bangs": [
+            "blunt",
+            "narrow",
+            "side-swept",
+            "brow-grazing"
+        ],
+        "haircut": {
+            "short": [
+                "asymmetrical feathered pixie",
+                "pixie-bob",
+                "stacked bob",
+                "bob with long strands in the front, straight hair"
+            ],
+            "medium": [
+                "blunt bangs, wavy layers",
+                "chin-length bob with bangs, straight hair",
+                "stacked bob",
+                "a-line bob, straight hair",
+                "layered",
+                "wave-bob"
+            ],
+            "long": [
+                "layered",
+                "blunt bangs, wavy layers"
+            ]
+        },
+        "does": [
+            "A hairstyle that creates width through the jawline with fullness and width through the nape to balance the shape of the face",
+            "Try wearing hair forward around the face",
+            "Soft angles in the front that start below the face help balance out the forehead",
+            "The key is to keep bangs narrow so that you can create the illusion of less width at the top"
+        ],
+        "donts": [
+            "Try to avoid styles that accentuate the width of the forehead or cheekbones",
+            "Avoid pony-tail or top-knot"
+        ]
+    },
+    "square": {
+        "faceShape": "square",
+        "bangs": [
+            "wispy",
+            "side-swept"
+        ],
+        "haircut": {
+            "short": [
+                "pixie-bob with side-swept chin-length bangs"
+            ],
+            "medium": [
+                "wavy shags with wispy fringe",
+                "wavy shags with soft side-swept bangs"
+            ],
+            "long": [
+                "layered with fringe"
+            ]
+        },
+        "does": [
+            "Hairstyles that are fuller at the sides and that soften the corners are best"
+        ],
+        "donts": [
+            "Avoid enhancing the jawline further with blunt lines",
+            "Strong fringe is not recommended either"
+        ]
+    },
+    "oval": {
+        "faceShape": "oval",
+        "bangs": [
+            "blunt"
+        ],
+        "haircut": {
+            "short": [
+                "side-swept pixie-bob"
+            ],
+            "medium": [
+                "wavy",
+                "layered bob",
+                "square bob"
+            ],
+            "long": [
+                "layered"
+            ]
+        },
+        "does": [
+            "Choose styles that will enhance your key features"
+        ],
+        "donts": [
+            "Steer clear of too much height on top since that can make this shape feel oblong"
+        ]
+    },
+    "oblong": {
+        "faceShape": "oblong",
+        "bangs": [
+            "side-swept",
+            "feathered"
+        ],
+        "haircut": {
+            "short": [
+                "layered bob"
+            ],
+            "medium": [
+                "soft waves",
+                "wave-bob",
+                "long bob",
+                "shaggy bob",
+                "chin-length bob"
+            ],
+            "long": [
+                "face-framing layers"
+            ]
+        },
+        "does": [
+            "Creating fullness through the sides and keeping volume from the ears up is key",
+            "Soften the edges and strong jawlines with layers, volume, and side-swept or feathered fringe",
+            "Long layers and angles add movement and texture to the hair"
+        ],
+        "donts": [
+            "Flat, straight hair with no movement and volume with no width should be avoided"
+        ]
+    }
+}
