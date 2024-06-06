@@ -13,6 +13,9 @@ import tensorflow as tf
 import cv2
 
 st.title('Get haircut recommendations')
+top = st.container()
+left_column, right_column = st.columns(2)
+bottom = st.container()
 
 def preprocess_image(image, img_size = (150, 150)):
         # image = image.astype('float32')
@@ -38,7 +41,6 @@ def preprocess_image(image, img_size = (150, 150)):
         final_face = cv2.resize(final_face, img_size)
         new_batch.append(final_face.astype(int))
         results_tensor = tf.stack(new_batch)
-        # print(results_tensor.shape)
         return results_tensor
 
 def get_face_shape(batched_img):
@@ -62,9 +64,9 @@ def load_recommendations():
                 try:
                     return json.load(stream)
                 except ValueError:  # includes simplejson.decoder.JSONDecodeError
-                    print('Decoding JSON has failed')
+                    st.text('Decoding JSON has failed')
         except FileNotFoundError:
-            print('This file does not exist, try again!')
+            st.text('This file does not exist, try again!')
 
 def recommend(face_img):
         processed_face = preprocess_image(face_img)
@@ -75,30 +77,28 @@ def recommend(face_img):
         else:
             return None
 
-# congrats_text = st.subheader('', divider='rainbow')
-top = st.container()
-left_column, right_column = st.columns(2)
-bottom = st.container()
 
-# with right_column:  
-with top:
-  if top.button("Get Recommendations", type="primary"):
-      recommendations = None
-      random_file = None
-      with st.spinner('Your faceshape is analysed...'):
-          random_file = choice(glob(f'face_shape/shapeofyou-2/test/**/*.jpg'))
-          face_img = cv2.cvtColor(cv2.imread(random_file), cv2.COLOR_BGR2RGB)
-          left_column.image(face_img, caption='For test purposes:  '+random_file.split('/')[-2])
-          recommendations = recommend(face_img)
-      if recommendations is not None:
-          top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
-          # congrats_text = f"Congratulations! You have a {recommendations['faceShape']} shape!"
-          does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
-          right_column.success(does)
-          donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
-          right_column.error(donts)
-          for length, cuts in recommendations['haircut'].items():
-            bottom.subheader(length)
-            for cut in cuts:
-              bottom.text(cut)
+def main():
+  with top:
+    if top.button("Get Recommendations", type="primary"):
+        recommendations = None
+        random_file = None
+        with st.spinner('Your faceshape is analysed...'):
+            random_file = choice(glob(f'face_shape/shapeofyou-2/test/**/*.jpg'))
+            face_img = cv2.cvtColor(cv2.imread(random_file), cv2.COLOR_BGR2RGB)
+            left_column.image(face_img, caption='For test purposes:  '+random_file.split('/')[-2])
+            recommendations = recommend(face_img)
+        if recommendations is not None:
+            top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
+            # congrats_text = f"Congratulations! You have a {recommendations['faceShape']} shape!"
+            does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
+            right_column.success(does)
+            donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
+            right_column.error(donts)
+            for length, cuts in recommendations['haircut'].items():
+              bottom.subheader(length)
+              for cut in cuts:
+                bottom.text(cut)
 
+if __name__ == "__main__":
+    main()
