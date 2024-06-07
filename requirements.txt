@@ -1,0 +1,6 @@
+keras
+glob2
+mtcnn
+tensorflow[and-cuda]
+opencv-python
+Google-Images-Search
