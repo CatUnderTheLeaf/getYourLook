@@ -70,7 +70,7 @@ def load_nn_model():
     Returns:
         Keras model: faceShape classification model
     """
-    return keras.saving.load_model("face_shape/models_weights/fine_tune_block6_aug.keras")
+    return keras.saving.load_model("face_shape/app_model/fine_tune_block6_aug.keras")
 
 
 def get_face_shape(model, batched_img):

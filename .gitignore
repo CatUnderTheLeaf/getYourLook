@@ -5,11 +5,12 @@ face_shape/augmented_ds/*
 face_shape/logs/train/*
 face_shape/logs/validation/*
 face_shape/.checkpoints/*
+face_shape/models_weights/*
 .streamlit/secrets.toml
 
 
 # model and weight files
-*.keras
+
 *.h5
 
 # Byte-compiled / optimized / DLL files
