@@ -164,7 +164,7 @@ def gis(query, num=2):
     test_images = []
     for _ in range(num):
         test_image = GSImage(gis)
-        test_image.url = choice(glob(f'face_shape/shapeofyou-2/test/**/*.jpg'))
+        test_image.url = choice(glob(f'face_shape/test_images/*.jpg'))
         test_image.referrer_url = 'nfnfbfb'
         test_images.append(test_image)
     return test_images
@@ -181,9 +181,9 @@ def main():
             random_file = None
 
             with st.spinner('Your faceshape is analysed...'):
-                random_file = choice(glob(f'face_shape/shapeofyou-2/test/**/*.jpg'))
+                random_file = choice(glob(f'face_shape/test_images/*.jpg'))
                 face_img = cv2.cvtColor(cv2.imread(random_file), cv2.COLOR_BGR2RGB)
-                left_column.image(face_img, caption='For test purposes:  '+random_file.split('/')[-2])
+                left_column.image(face_img)
                 recommendations = recommend(model, face_img)
 
             if recommendations is not None:

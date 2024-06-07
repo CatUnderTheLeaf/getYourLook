@@ -10,7 +10,7 @@ face_shape/models_weights/*
 
 
 # model and weight files
-
+*.keras
 *.h5
 
 # Byte-compiled / optimized / DLL files
