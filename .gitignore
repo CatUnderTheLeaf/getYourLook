@@ -5,6 +5,8 @@ face_shape/augmented_ds/*
 face_shape/logs/train/*
 face_shape/logs/validation/*
 face_shape/.checkpoints/*
+.streamlit/secrets.toml
+
 
 # model and weight files
 *.keras
