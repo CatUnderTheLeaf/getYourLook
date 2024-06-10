@@ -39,30 +39,33 @@ def preprocess_image(image, img_size = (150, 150)):
     Returns:
         tf.Tensor: batched image tensor
     """
-    @st.cache_resource
-    def load_detector():
-        return MTCNN()
+    # @st.cache_resource
+    # def load_detector():
+    #     return MTCNN()
     
-    detector = load_detector()
-    min_conf = 0.9
-    offset = 20
+    # detector = load_detector()
+    # min_conf = 0.9
+    # offset = 20
     new_batch = []
 
-    h,w,ch = image.shape
-    area = 0
-    final_face = None
-    detections = detector.detect_faces(image)
+    # h,w,ch = image.shape
+    # area = 0
+    # final_face = None
+    # detections = detector.detect_faces(image)
 
-    # transform only face with the biggest area 
-    for det in detections:
-        if det['confidence'] >= min_conf:
-            x, y, width, height = det['box']
-            object = image[max(y-offset,0):min(y+height+offset,h), max(0,x-offset):min(w,x+width+offset), :]
-            object_area = object.shape[0]*object.shape[1]
-            if (object_area > area):
-                area = object_area
-                final_face = object
-    final_face = cv2.resize(final_face, img_size)
+    # # transform only face with the biggest area 
+    # for det in detections:
+    #     if det['confidence'] >= min_conf:
+    #         x, y, width, height = det['box']
+    #         object = image[max(y-offset,0):min(y+height+offset,h), max(0,x-offset):min(w,x+width+offset), :]
+    #         object_area = object.shape[0]*object.shape[1]
+    #         if (object_area > area):
+    #             area = object_area
+    #             final_face = object
+    # final_face = cv2.resize(final_face, img_size)
+    
+    # for test purposes as detector has some errors
+    final_face = image
     new_batch.append(final_face.astype(int))
     results_tensor = tf.stack(new_batch)
     return results_tensor
