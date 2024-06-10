@@ -39,7 +39,11 @@ def preprocess_image(image, img_size = (150, 150)):
     Returns:
         tf.Tensor: batched image tensor
     """
-    detector = MTCNN()
+    @st.cache_resource
+    def load_detector():
+        return MTCNN()
+    
+    detector = load_detector()
     min_conf = 0.9
     offset = 20
     new_batch = []
