@@ -169,54 +169,90 @@ def gis(query, num=2):
         test_images.append(test_image)
     return test_images
 
+# def get_image_file_widget():
+#     if file1:
+#         return file1
+#     elif file2:
+#         return file2
+#     else:
+#         return None
 
 def main():
     # wait before nn model is loaded
     # only after load everything else
     model = load_nn_model()
-    with top:
-        if top.button("Get Recommendations", type="primary"):
 
-            recommendations = None
-            random_file = None
+    if 'uploaded_file' not in st.session_state:
+        st.session_state.uploaded_file = None
 
-            with st.spinner('Your faceshape is analysed...'):
-                random_file = choice(glob(f'face_shape/test_images/*.jpg'))
-                face_img = cv2.cvtColor(cv2.imread(random_file), cv2.COLOR_BGR2RGB)
-                left_column.image(face_img)
-                recommendations = recommend(model, face_img)
+    if 'display_result' not in st.session_state or st.session_state.display_result==False:
+        st.session_state.display_result = False
+    else:
+        st.session_state.display_result = True
 
-            if recommendations is not None:
+    def btn_b_callback():
+        st.session_state.display_result=False
+        st.session_state.uploaded_file = None
+        
+    def btn_a_callback():
+        st.session_state.display_result = True
 
-                # format recommendations in the botom section
-                top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
-                does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
-                right_column.success(does)
-                donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
-                right_column.error(donts)
-                right_column.info('#### Your recommended haircuts :arrow_down:')
+    if not st.session_state.display_result:
+        file1 = right_column.file_uploader("Upload an image", type=['png', 'jpg'])
+        # right_column.markdown("... or just ... ")
+        # file2 = left_column.camera_input("Take a picture")
+        uploaded_file = file1 #if file1 else file2
+        if uploaded_file is not None:
+            bytes_data = uploaded_file.getvalue()
+            cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+            face_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+            left_column.image(face_img)
+            st.session_state.uploaded_file = face_img
+            button_a = right_column.button('Get recommendations', on_click=btn_a_callback, type='primary')
 
-                # compose google images in rows for each hair-cut
-                for length, cuts in recommendations['haircut'].items():
-                    bottom.divider()
-                    bottom.subheader(length.title() + ' length')
-                    for cut in cuts:
-                        num_of_images = 5
-                        hair_cut_images = gis(cut, num_of_images)
-                        image_columns = bottom.columns(num_of_images+1)
-                        bottom.write(
-                            """<style>
-                            [data-testid="stHorizontalBlock"] {
-                                align-items: center;
-                            }
-                            </style>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                        image_columns[0].markdown('##### '+cut)
-                        for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
-                            column.image(hair_cut.url, use_column_width="always")
-                            column.caption('[source]('+ hair_cut.referrer_url +')')
+    if st.session_state.display_result:
+        face_img = st.session_state.uploaded_file
+        with top:
+            if face_img is not None:
+
+                recommendations = None
+
+                with st.spinner('Your faceshape is analysed...'):
+                    left_column.image(face_img)
+                    recommendations = recommend(model, face_img)
+                    button_b = top.button('Reset', on_click=btn_b_callback, type='primary')
+    
+                if recommendations is not None:
+
+                    # format recommendations in the botom section
+                    top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
+                    does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
+                    right_column.success(does)
+                    donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
+                    right_column.error(donts)
+                    right_column.info('#### Your recommended haircuts :arrow_down:')
+
+                    # compose google images in rows for each hair-cut
+                    for length, cuts in recommendations['haircut'].items():
+                        bottom.divider()
+                        bottom.subheader(length.title() + ' length')
+                        for cut in cuts:
+                            num_of_images = 5
+                            hair_cut_images = gis(cut, num_of_images)
+                            image_columns = bottom.columns(num_of_images+1)
+                            bottom.write(
+                                """<style>
+                                [data-testid="stHorizontalBlock"] {
+                                    align-items: center;
+                                }
+                                </style>
+                                """,
+                                unsafe_allow_html=True
+                            )
+                            image_columns[0].markdown('##### '+cut)
+                            for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
+                                column.image(hair_cut.url, use_column_width="always")
+                                column.caption('[source]('+ hair_cut.referrer_url +')')
            
 
 if __name__ == "__main__":
