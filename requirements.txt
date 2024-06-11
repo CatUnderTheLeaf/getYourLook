@@ -1,6 +1,8 @@
-keras
-glob2
-mtcnn
-tensorflow[and-cuda]
-opencv-python-headless
-Google-Images-Search
+Google_Images_Search==1.4.6
+keras==3.3.3
+mtcnn==0.1.1
+numpy==1.26.4
+opencv-python-headless==4.10.0.82
+Requests==2.32.3
+streamlit==1.35.0
+tensorflow==2.16.1
