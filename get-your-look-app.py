@@ -82,6 +82,9 @@ def load_nn_model():
     return keras.applications.resnet50.ResNet50(weights='imagenet')
     # return keras.saving.load_model("face_shape/app_model/fine_tune_block6_aug.keras", compile=False)
 
+# @st.cache_resource
+def load_keras_built_model():
+    return keras.applications.resnet50.ResNet50(weights='imagenet')
 
 def get_face_shape(model, batched_img):
     """get model classification on the batched image
@@ -198,7 +201,8 @@ def gis(query, num=2):
 def main():
     # wait before nn model is loaded
     # only after load everything else
-    model = load_nn_model()
+    # model = load_nn_model()
+    model = load_keras_built_model()
 
     if 'uploaded_file' not in st.session_state:
         st.session_state.uploaded_file = None
