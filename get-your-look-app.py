@@ -66,6 +66,7 @@ def preprocess_image(image, img_size = (150, 150)):
     
     # for test purposes as detector has some errors
     final_face = image
+    final_face = cv2.resize(final_face, img_size)
     new_batch.append(final_face.astype(int))
     results_tensor = tf.stack(new_batch)
     return results_tensor
