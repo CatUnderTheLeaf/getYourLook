@@ -78,7 +78,9 @@ def load_nn_model():
     Returns:
         Keras model: faceShape classification model
     """
-    return keras.saving.load_model("face_shape/app_model/fine_tune_block6_aug.keras", compile=False)
+    
+    return keras.applications.resnet50.ResNet50(weights='imagenet')
+    # return keras.saving.load_model("face_shape/app_model/fine_tune_block6_aug.keras", compile=False)
 
 
 def get_face_shape(model, batched_img):
@@ -124,14 +126,22 @@ def recommend(model, face_img):
 
     Returns:
         json object: hair cut recommendations
-    """    
-    processed_face = preprocess_image(face_img)
-    face_shape = get_face_shape(model, processed_face)
-    recommendations = load_recommendations()
-    if recommendations is not None:
-        return recommendations[face_shape]
-    else:
-        return None
+    """ 
+    img = cv2.resize(face_img, (224, 224))
+    x = keras.utils.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = keras.applications.resnet50.preprocess_input(x)
+
+    preds = model.predict(x)
+    return keras.applications.resnet50.decode_predictions(preds, top=3)[0]
+
+    # processed_face = preprocess_image(face_img)
+    # face_shape = get_face_shape(model, processed_face)
+    # recommendations = load_recommendations()
+    # if recommendations is not None:
+    #     return recommendations[face_shape]
+    # else:
+    #     return None
 
 @st.cache_data
 def gis(query, num=2):
@@ -231,36 +241,36 @@ def main():
                     button_b = top.button('Reset', on_click=btn_b_callback, type='primary')
     
                 if recommendations is not None:
-
+                    right_column.write(recommendations)
                     # format recommendations in the botom section
-                    top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
-                    does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
-                    right_column.success(does)
-                    donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
-                    right_column.error(donts)
-                    right_column.info('#### Your recommended haircuts :arrow_down:')
+                    # top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
+                    # does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
+                    # right_column.success(does)
+                    # donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
+                    # right_column.error(donts)
+                    # right_column.info('#### Your recommended haircuts :arrow_down:')
 
-                    # compose google images in rows for each hair-cut
-                    for length, cuts in recommendations['haircut'].items():
-                        bottom.divider()
-                        bottom.subheader(length.title() + ' length')
-                        for cut in cuts:
-                            num_of_images = 5
-                            hair_cut_images = gis(cut, num_of_images)
-                            image_columns = bottom.columns(num_of_images+1)
-                            bottom.write(
-                                """<style>
-                                [data-testid="stHorizontalBlock"] {
-                                    align-items: center;
-                                }
-                                </style>
-                                """,
-                                unsafe_allow_html=True
-                            )
-                            image_columns[0].markdown('##### '+cut)
-                            for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
-                                column.image(hair_cut.url, use_column_width="always")
-                                column.caption('[source]('+ hair_cut.referrer_url +')')
+                    # # compose google images in rows for each hair-cut
+                    # for length, cuts in recommendations['haircut'].items():
+                    #     bottom.divider()
+                    #     bottom.subheader(length.title() + ' length')
+                    #     for cut in cuts:
+                    #         num_of_images = 5
+                    #         hair_cut_images = gis(cut, num_of_images)
+                    #         image_columns = bottom.columns(num_of_images+1)
+                    #         bottom.write(
+                    #             """<style>
+                    #             [data-testid="stHorizontalBlock"] {
+                    #                 align-items: center;
+                    #             }
+                    #             </style>
+                    #             """,
+                    #             unsafe_allow_html=True
+                    #         )
+                    #         image_columns[0].markdown('##### '+cut)
+                    #         for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
+                    #             column.image(hair_cut.url, use_column_width="always")
+                    #             column.caption('[source]('+ hair_cut.referrer_url +')')
            
 
 if __name__ == "__main__":
