@@ -205,7 +205,7 @@ def gis(query, num=2):
     
     gis = load_gis()
     search_params = {
-        'q': query,
+        'q': query + 'haircut',
         'num': num,
         # 'fileType': 'jpg|gif|png',
         # 'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived', #cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
