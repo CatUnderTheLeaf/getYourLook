@@ -180,6 +180,17 @@ def recommend(model, face_img):
     else:
         return None
 
+@st.cache_resource
+def load_gis():
+    """load custom google search API only once
+
+    Returns:
+        GoogleImagesSearch: google search object
+    """        
+    API_KEY = st.secrets["GoogleAPI_key"]
+    SE_KEY = st.secrets["SE_key"]
+    return GoogleImagesSearch(API_KEY, SE_KEY)
+
 @st.cache_data
 def gis(query, num=2):
     """search for images with custom image google search API
@@ -191,16 +202,6 @@ def gis(query, num=2):
     Returns:
         list: list of images with urls and ref_urls
     """
-    @st.cache_resource
-    def load_gis():
-        """load custom google search API only once
-
-        Returns:
-            GoogleImagesSearch: google search object
-        """        
-        API_KEY = st.secrets["GoogleAPI_key"]
-        SE_KEY = st.secrets["SE_key"]
-        return GoogleImagesSearch(API_KEY, SE_KEY)
     
     gis = load_gis()
     search_params = {
@@ -212,17 +213,17 @@ def gis(query, num=2):
         # 'imgSize': 'small', ##
         'imgColorType': 'color' ##
     }
-    # gis.search(search_params=search_params)
-    # return gis.results()
+    gis.search(search_params=search_params)
+    return gis.results()
 
     # for test purposes, so not to exceed API limits
-    test_images = []
-    for _ in range(num):
-        test_image = GSImage(gis)
-        test_image.url = choice(glob(f'face_shape/test_images/*.jpg'))
-        test_image.referrer_url = 'nfnfbfb'
-        test_images.append(test_image)
-    return test_images
+    # test_images = []
+    # for _ in range(num):
+    #     test_image = GSImage(gis)
+    #     test_image.url = choice(glob(f'face_shape/test_images/*.jpg'))
+    #     test_image.referrer_url = 'nfnfbfb'
+    #     test_images.append(test_image)
+    # return test_images
 
 def main():
     # wait before nn model is loaded
