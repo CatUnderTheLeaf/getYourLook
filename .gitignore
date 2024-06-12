@@ -6,6 +6,7 @@ face_shape/logs/train/*
 face_shape/logs/validation/*
 face_shape/.checkpoints/*
 face_shape/models_weights/*
+face_shape/app_model/*
 .streamlit/secrets.toml
 
 
