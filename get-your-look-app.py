@@ -82,7 +82,7 @@ def load_nn_model():
     return keras.applications.resnet50.ResNet50(weights='imagenet')
     # return keras.saving.load_model("face_shape/app_model/fine_tune_block6_aug.keras", compile=False)
 
-# @st.cache_resource
+@st.cache_resource
 def load_keras_built_model():
     return keras.applications.resnet50.ResNet50(weights='imagenet')
 
