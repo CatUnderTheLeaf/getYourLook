@@ -124,7 +124,7 @@ def load_nn_model():
         Keras model: faceShape classification model
     """
     # download weights file if it is not uploaded
-    if st.session_state.uploaded_file is None or not os.path.exists('face_shape_model.keras'):
+    if not os.path.exists('face_shape_model.keras') or st.session_state.uploaded_file is None:
         download_model()
     
     return keras.saving.load_model("face_shape_model.keras", compile=False)
@@ -215,8 +215,12 @@ def gis(query, num=2):
         # 'imgSize': 'small', ##
         'imgColorType': 'color' ##
     }
-    gis.search(search_params=search_params)
-    return gis.results()
+    try:
+        gis.search(search_params=search_params)
+        return gis.results()
+    except :
+        return None
+
 
     # for test purposes, so not to exceed API limits
     # test_images = []
@@ -228,11 +232,7 @@ def gis(query, num=2):
     # return test_images
 
 def main():
-    # wait before nn model is loaded
-    # only after load everything else
-    # model = load_nn_model()
-    model = load_nn_model()
-
+    
     if 'uploaded_file' not in st.session_state:
         st.session_state.uploaded_file = None
 
@@ -247,6 +247,10 @@ def main():
         
     def btn_a_callback():
         st.session_state.display_result = True
+
+    # wait before nn model is loaded
+    # only after load everything else
+    model = load_nn_model()
 
     # show the possibility to upload image file
     # and after successful upload - show button
@@ -304,10 +308,14 @@ def main():
                                 """,
                                 unsafe_allow_html=True
                             )
+                            if hair_cut_images is not None:
+                                for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
+                                    column.image(hair_cut.url, use_column_width="always")
+                                    column.caption('[source]('+ hair_cut.referrer_url +')')
+                            else:
+                                bottom.error('Google Custom API Search query quota has reached its limits')
                             image_columns[0].markdown('##### '+cut)
-                            for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
-                                column.image(hair_cut.url, use_column_width="always")
-                                column.caption('[source]('+ hair_cut.referrer_url +')')
+                            
            
 
 if __name__ == "__main__":
