@@ -73,30 +73,32 @@ def preprocess_image(image, img_size = (150, 150)):
     results_tensor = tf.stack(new_batch)
     return results_tensor
 
+@st.cache_resource
 def download_model():
-
+    
     def save_response_content(response, destination):
-
-        weights_warning = st.warning("Downloading %s..." % destination)
-        progress_bar = st.progress(0)
-        length = st.secrets["MODEL_SIZE"]
-        CHUNK_SIZE = 32768
-        MEGABYTES = 2.0 ** 20.0
-        
-        with open(destination, "wb") as f:
-            counter = 0.0
-            for chunk in response.iter_content(CHUNK_SIZE):
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
-                    counter += CHUNK_SIZE
-                    weights_warning.warning("Downloading %s... (%6.2f/%6.2f MB)" %
-                        (destination, counter / MEGABYTES, length / MEGABYTES))
-                    progress_bar.progress(min(counter / length, 1.0))
-        
-        if weights_warning is not None:
-            weights_warning.empty()
-        if progress_bar is not None:
-            progress_bar.empty()
+        weights_warning, progress_bar = None, None
+        try:
+            weights_warning = st.warning("Downloading %s..." % destination)
+            progress_bar = st.progress(0)
+            length = st.secrets["MODEL_SIZE"]
+            CHUNK_SIZE = 32768
+            MEGABYTES = 2.0 ** 20.0
+            
+            with open(destination, "wb") as f:
+                counter = 0.0
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+                        counter += CHUNK_SIZE
+                        weights_warning.warning("Downloading %s... (%6.2f/%6.2f MB)" %
+                            (destination, counter / MEGABYTES, length / MEGABYTES))
+                        progress_bar.progress(min(counter / length, 1.0))
+        finally:
+            if weights_warning is not None:
+                weights_warning.empty()
+            if progress_bar is not None:
+                progress_bar.empty()
 
     id=st.secrets["MODEL_ID"]
     destination = 'face_shape_model.keras'
@@ -113,14 +115,15 @@ def download_model():
 
     save_response_content(response, destination)
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Loading model weights...")
 def load_nn_model():
     """load nn model and cache it, so it is loaded only once
 
     Returns:
         Keras model: faceShape classification model
     """
-    if not os.path.exists('face_shape_model.keras'):
+    # download weights file if it is not uploaded
+    if st.session_state.uploaded_file is None or not os.path.exists('face_shape_model.keras'):
         download_model()
     
     return keras.saving.load_model("face_shape_model.keras", compile=False)
