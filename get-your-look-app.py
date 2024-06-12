@@ -30,6 +30,8 @@ top = st.container()
 border_left, left_column, right_column, border_right = st.columns([1, 2, 3, 1])
 bottom = st.container()
 
+############################################################
+
 @st.cache_resource
 def load_detector():
     """load MTCNN detector
@@ -191,7 +193,7 @@ def load_gis():
     SE_KEY = st.secrets["SE_key"]
     return GoogleImagesSearch(API_KEY, SE_KEY)
 
-@st.cache_data
+@st.cache_data(show_spinner=False)
 def gis(query, num=2):
     """search for images with custom image google search API
 
