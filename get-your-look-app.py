@@ -32,6 +32,11 @@ bottom = st.container()
 
 @st.cache_resource
 def load_detector():
+    """load MTCNN detector
+
+    Returns:
+        MTCNN(object): face detector
+    """
     return MTCNN()
 
 def preprocess_image(image, img_size = (150, 150)):
@@ -44,7 +49,6 @@ def preprocess_image(image, img_size = (150, 150)):
     Returns:
         tf.Tensor: batched image tensor
     """
-
     
     detector = load_detector()
     min_conf = 0.9
@@ -67,24 +71,20 @@ def preprocess_image(image, img_size = (150, 150)):
                 final_face = object
     final_face = cv2.resize(final_face, img_size)
     
-    # for test purposes as detector has some errors
-    # final_face = image
-    # final_face = cv2.resize(final_face, img_size)
     new_batch.append(final_face.astype(int))
     results_tensor = tf.stack(new_batch)
     return results_tensor
 
 @st.cache_resource
 def download_model():
-    
+    """download keras model from google drive storage
+        and display download progress
+    """
     def save_response_content(response, destination):
-        weights_warning, progress_bar = None, None
         try:
-            weights_warning = st.warning("Downloading %s..." % destination)
             progress_bar = st.progress(0)
             length = st.secrets["MODEL_SIZE"]
             CHUNK_SIZE = 32768
-            MEGABYTES = 2.0 ** 20.0
             
             with open(destination, "wb") as f:
                 counter = 0.0
@@ -92,12 +92,10 @@ def download_model():
                     if chunk: # filter out keep-alive new chunks
                         f.write(chunk)
                         counter += CHUNK_SIZE
-                        weights_warning.warning("Downloading %s... (%6.2f/%6.2f MB)" %
-                            (destination, counter / MEGABYTES, length / MEGABYTES))
+                        
                         progress_bar.progress(min(counter / length, 1.0))
         finally:
-            if weights_warning is not None:
-                weights_warning.empty()
+            
             if progress_bar is not None:
                 progress_bar.empty()
 
@@ -173,14 +171,7 @@ def recommend(model, face_img):
     Returns:
         json object: hair cut recommendations
     """ 
-    # img = cv2.resize(face_img, (224, 224))
-    # x = keras.utils.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = keras.applications.resnet50.preprocess_input(x)
-
-    # preds = model.predict(x)
-    # return keras.applications.resnet50.decode_predictions(preds, top=3)[0]
-
+    
     processed_face = preprocess_image(face_img)
     face_shape = get_face_shape(model, processed_face)
     recommendations = load_recommendations()
@@ -233,14 +224,6 @@ def gis(query, num=2):
         test_images.append(test_image)
     return test_images
 
-# def get_image_file_widget():
-#     if file1:
-#         return file1
-#     elif file2:
-#         return file2
-#     else:
-#         return None
-
 def main():
     # wait before nn model is loaded
     # only after load everything else
@@ -262,6 +245,8 @@ def main():
     def btn_a_callback():
         st.session_state.display_result = True
 
+    # show the possibility to upload image file
+    # and after successful upload - show button
     if not st.session_state.display_result:
         file1 = right_column.file_uploader("Upload an image", type=['png', 'jpg'])
         # right_column.markdown("... or just ... ")
@@ -275,6 +260,9 @@ def main():
             st.session_state.uploaded_file = face_img
             button_a = right_column.button('Get recommendations', on_click=btn_a_callback, type='primary')
 
+    # when button 'Get recommendations' is pressed
+    # hide upload content and show only recommendations content
+    # show button to reset recoomendations
     if st.session_state.display_result:
         face_img = st.session_state.uploaded_file
         with top:
@@ -290,34 +278,34 @@ def main():
                 if recommendations is not None:
                     right_column.write(recommendations)
                     # format recommendations in the botom section
-                    # top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
-                    # does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
-                    # right_column.success(does)
-                    # donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
-                    # right_column.error(donts)
-                    # right_column.info('#### Your recommended haircuts :arrow_down:')
+                    top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
+                    does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
+                    right_column.success(does)
+                    donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
+                    right_column.error(donts)
+                    right_column.info('#### Your recommended haircuts :arrow_down:')
 
-                    # # compose google images in rows for each hair-cut
-                    # for length, cuts in recommendations['haircut'].items():
-                    #     bottom.divider()
-                    #     bottom.subheader(length.title() + ' length')
-                    #     for cut in cuts:
-                    #         num_of_images = 5
-                    #         hair_cut_images = gis(cut, num_of_images)
-                    #         image_columns = bottom.columns(num_of_images+1)
-                    #         bottom.write(
-                    #             """<style>
-                    #             [data-testid="stHorizontalBlock"] {
-                    #                 align-items: center;
-                    #             }
-                    #             </style>
-                    #             """,
-                    #             unsafe_allow_html=True
-                    #         )
-                    #         image_columns[0].markdown('##### '+cut)
-                    #         for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
-                    #             column.image(hair_cut.url, use_column_width="always")
-                    #             column.caption('[source]('+ hair_cut.referrer_url +')')
+                    # compose google images in rows for each hair-cut
+                    for length, cuts in recommendations['haircut'].items():
+                        bottom.divider()
+                        bottom.subheader(length.title() + ' length')
+                        for cut in cuts:
+                            num_of_images = 5
+                            hair_cut_images = gis(cut, num_of_images)
+                            image_columns = bottom.columns(num_of_images+1)
+                            bottom.write(
+                                """<style>
+                                [data-testid="stHorizontalBlock"] {
+                                    align-items: center;
+                                }
+                                </style>
+                                """,
+                                unsafe_allow_html=True
+                            )
+                            image_columns[0].markdown('##### '+cut)
+                            for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
+                                column.image(hair_cut.url, use_column_width="always")
+                                column.caption('[source]('+ hair_cut.referrer_url +')')
            
 
 if __name__ == "__main__":
