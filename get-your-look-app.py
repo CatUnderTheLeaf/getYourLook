@@ -276,7 +276,6 @@ def main():
                     button_b = top.button('Reset', on_click=btn_b_callback, type='primary')
     
                 if recommendations is not None:
-                    right_column.write(recommendations)
                     # format recommendations in the botom section
                     top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
                     does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
