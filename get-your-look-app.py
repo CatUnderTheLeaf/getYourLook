@@ -291,7 +291,7 @@ def main():
                         bottom.subheader(length.title() + ' length')
                         for cut in cuts:
                             num_of_images = 5
-                            hair_cut_images = gis(cut, num_of_images)
+                            hair_cut_images = gis(cut + length.title() + ' length', num_of_images)
                             image_columns = bottom.columns(num_of_images+1)
                             bottom.write(
                                 """<style>
