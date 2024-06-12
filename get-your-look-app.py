@@ -3,6 +3,7 @@
 # global_var_name, instance_var_name, function_parameter_name, local_var_name.
 
 import streamlit as st
+import os
 import numpy as np
 import json
 import keras
@@ -11,6 +12,7 @@ from random import choice
 from mtcnn import MTCNN
 import tensorflow as tf
 import cv2
+import requests
 from google_images_search import GoogleImagesSearch
 from google_images_search.fetch_resize_save import GSImage
 
@@ -71,6 +73,46 @@ def preprocess_image(image, img_size = (150, 150)):
     results_tensor = tf.stack(new_batch)
     return results_tensor
 
+def download_model():
+
+    def save_response_content(response, destination):
+
+        weights_warning = st.warning("Downloading %s..." % destination)
+        progress_bar = st.progress(0)
+        length = st.secrets["MODEL_SIZE"]
+        CHUNK_SIZE = 32768
+        MEGABYTES = 2.0 ** 20.0
+        
+        with open(destination, "wb") as f:
+            counter = 0.0
+            for chunk in response.iter_content(CHUNK_SIZE):
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
+                    counter += CHUNK_SIZE
+                    weights_warning.warning("Downloading %s... (%6.2f/%6.2f MB)" %
+                        (destination, counter / MEGABYTES, length / MEGABYTES))
+                    progress_bar.progress(min(counter / length, 1.0))
+        
+        if weights_warning is not None:
+            weights_warning.empty()
+        if progress_bar is not None:
+            progress_bar.empty()
+
+    id=st.secrets["MODEL_ID"]
+    destination = 'face_shape_model.keras'
+    URL = st.secrets["MODEL_URL"]
+    
+    session = requests.Session()
+
+    params = {'id': id, 
+              'confirm': 't',
+              'export': 'download',
+              'uuid': st.secrets["UUID"] }
+
+    response = session.get(URL, params = params, stream = True)
+
+    save_response_content(response, destination)
+
 @st.cache_resource
 def load_nn_model():
     """load nn model and cache it, so it is loaded only once
@@ -78,13 +120,10 @@ def load_nn_model():
     Returns:
         Keras model: faceShape classification model
     """
+    if not os.path.exists('face_shape_model.keras'):
+        download_model()
     
-    return keras.applications.resnet50.ResNet50(weights='imagenet')
-    # return keras.saving.load_model("face_shape/app_model/fine_tune_block6_aug.keras", compile=False)
-
-@st.cache_resource
-def load_keras_built_model():
-    return keras.applications.resnet50.ResNet50(weights='imagenet')
+    return keras.saving.load_model("face_shape_model.keras", compile=False)
 
 def get_face_shape(model, batched_img):
     """get model classification on the batched image
@@ -130,21 +169,21 @@ def recommend(model, face_img):
     Returns:
         json object: hair cut recommendations
     """ 
-    img = cv2.resize(face_img, (224, 224))
-    x = keras.utils.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = keras.applications.resnet50.preprocess_input(x)
+    # img = cv2.resize(face_img, (224, 224))
+    # x = keras.utils.img_to_array(img)
+    # x = np.expand_dims(x, axis=0)
+    # x = keras.applications.resnet50.preprocess_input(x)
 
-    preds = model.predict(x)
-    return keras.applications.resnet50.decode_predictions(preds, top=3)[0]
+    # preds = model.predict(x)
+    # return keras.applications.resnet50.decode_predictions(preds, top=3)[0]
 
-    # processed_face = preprocess_image(face_img)
-    # face_shape = get_face_shape(model, processed_face)
-    # recommendations = load_recommendations()
-    # if recommendations is not None:
-    #     return recommendations[face_shape]
-    # else:
-    #     return None
+    processed_face = preprocess_image(face_img)
+    face_shape = get_face_shape(model, processed_face)
+    recommendations = load_recommendations()
+    if recommendations is not None:
+        return recommendations[face_shape]
+    else:
+        return None
 
 @st.cache_data
 def gis(query, num=2):
@@ -202,7 +241,7 @@ def main():
     # wait before nn model is loaded
     # only after load everything else
     # model = load_nn_model()
-    model = load_keras_built_model()
+    model = load_nn_model()
 
     if 'uploaded_file' not in st.session_state:
         st.session_state.uploaded_file = None
