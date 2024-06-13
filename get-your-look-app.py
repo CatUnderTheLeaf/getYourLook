@@ -21,10 +21,6 @@ st.set_page_config(
     layout="wide",
 )
 
-ua_string = st_javascript("""window.navigator.userAgent;""")
-user_agent = parse(ua_string)
-st.session_state.is_session_pc = user_agent.is_pc
-
 # Page layout
 
 st.title('Get haircut recommendations')
@@ -127,7 +123,7 @@ def load_nn_model():
         Keras model: faceShape classification model
     """
     # download weights file if it is not uploaded
-    if not os.path.exists('face_shape_model.keras') or st.session_state.uploaded_file is None:
+    if not os.path.exists('face_shape_model.keras'):
         download_model()
     
     return keras.saving.load_model("face_shape_model.keras", compile=False)
@@ -235,6 +231,14 @@ def gis(query, num=2):
     # return test_images
 
 def main():
+
+    if 'is_session_pc' not in st.session_state:
+        try:
+            ua_string = st_javascript("""window.navigator.userAgent;""")
+            user_agent = parse(ua_string)
+            st.session_state.is_session_pc = user_agent.is_pc
+        except:
+            st.session_state.is_session_pc = False
     
     if 'uploaded_file' not in st.session_state:
         st.session_state.uploaded_file = None
