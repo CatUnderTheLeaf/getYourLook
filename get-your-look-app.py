@@ -1,26 +1,29 @@
-# module_name, package_name, ClassName, method_name, 
-# ExceptionName, function_name, GLOBAL_CONSTANT_NAME, 
-# global_var_name, instance_var_name, function_parameter_name, local_var_name.
-
 import streamlit as st
 import os
 import numpy as np
 import json
 import keras
-from glob import glob
-from random import choice
 from mtcnn import MTCNN
 import tensorflow as tf
 import cv2
 import requests
 from google_images_search import GoogleImagesSearch
-from google_images_search.fetch_resize_save import GSImage
+# from google_images_search.fetch_resize_save import GSImage
+# from glob import glob
+# from random import choice
+
+from streamlit_javascript import st_javascript
+from user_agents import parse
 
 # make a wide layout, not with a fixed width in the center 
 st.set_page_config(
     page_title="Get haircut recommendations",
     layout="wide",
 )
+
+ua_string = st_javascript("""window.navigator.userAgent;""")
+user_agent = parse(ua_string)
+st.session_state.is_session_pc = user_agent.is_pc
 
 # Page layout
 
@@ -263,9 +266,10 @@ def main():
             bytes_data = uploaded_file.getvalue()
             cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
             face_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
-            left_column.image(face_img)
             st.session_state.uploaded_file = face_img
-            button_a = right_column.button('Get recommendations', on_click=btn_a_callback, type='primary')
+            button_a = left_column.button('Get recommendations', on_click=btn_a_callback, type='primary')
+            left_column.image(face_img)
+            
 
     # when button 'Get recommendations' is pressed
     # hide upload content and show only recommendations content
@@ -278,7 +282,11 @@ def main():
                 recommendations = None
 
                 with st.spinner('Your faceshape is analysed...'):
-                    left_column.image(face_img)
+                    if st.session_state.is_session_pc:
+                        left_column.image(face_img)
+                        num_of_images = 5
+                    else:
+                        num_of_images = 1                                                        
                     recommendations = recommend(model, face_img)
                     button_b = top.button('Reset', on_click=btn_b_callback, type='primary')
     
@@ -296,7 +304,6 @@ def main():
                         bottom.divider()
                         bottom.subheader(length.title() + ' length')
                         for cut in cuts:
-                            num_of_images = 5
                             hair_cut_images = gis(cut + length.title() + ' length', num_of_images)
                             image_columns = bottom.columns(num_of_images+1)
                             bottom.write(
