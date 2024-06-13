@@ -76,7 +76,6 @@ def preprocess_image(image, img_size = (150, 150)):
     results_tensor = tf.stack(new_batch)
     return results_tensor
 
-@st.cache_resource
 def download_model():
     """download keras model from google drive storage
         and display download progress
