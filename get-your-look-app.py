@@ -122,7 +122,7 @@ def load_nn_model():
         Keras model: faceShape classification model
     """
     # download weights file if it is not uploaded
-    if not os.path.exists('face_shape_model.keras'):
+    if not os.path.isfile('face_shape_model.keras'):
         download_model()
     
     return keras.saving.load_model("face_shape_model.keras", compile=False)
