@@ -93,14 +93,17 @@ def download_model():
                         f.write(chunk)
                         counter += CHUNK_SIZE
                         
-                        progress_bar.progress(min(counter / length, 1.0))
+                        progress_bar.progress(min(counter / length, 1.0), text="downloading model weights file")
         finally:
             
             if progress_bar is not None:
                 progress_bar.empty()
 
-    id=st.secrets["MODEL_ID"]
     destination = 'face_shape_model.keras'
+    if os.path.exists(destination) and os.path.getsize(destination) == st.secrets["MODEL_SIZE"]:
+        return
+    
+    id=st.secrets["MODEL_ID"]    
     URL = st.secrets["MODEL_URL"]
     
     session = requests.Session()
@@ -122,9 +125,6 @@ def load_nn_model():
         Keras model: faceShape classification model
     """
     # download weights file if it is not uploaded
-    if not os.path.isfile('face_shape_model.keras'):
-        download_model()
-    
     return keras.saving.load_model("face_shape_model.keras", compile=False)
 
 def get_face_shape(model, batched_img):
@@ -256,8 +256,8 @@ def main():
 
     # wait before nn model is loaded
     # only after load everything else
+    download_model()
     model = load_nn_model()
-
     # show the possibility to upload image file
     # and after successful upload - show button
     if not st.session_state.display_result:
