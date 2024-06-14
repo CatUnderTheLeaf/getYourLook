@@ -11,26 +11,24 @@
                 "pixie bob",
                 "stacked pixie",
                 "asymmetrical pixie",
-                "ear-framing pixie",
                 "undercut pixie",
                 "mohawk pixie",
-                "crew cut pixie"
+                "crew cut pixie",
+                "chin-length bob straight hair blunt"                
             ],
             "medium": [
-                "chin-length bob, straight hair, blunt",
-                "a-line bob, straight hair",
-                "stacked bob, straight hair",
+                "a-line bob straight hair",
+                "stacked bob straight hair",
                 "layered bob",
-                "asymmetrical bob, straight hair",
+                "asymmetrical bob straight hair",
                 "shaggy bob",
-                "long bob, straight hair",
+                "long bob straight hair",
                 "layered bob"
             ],
             "long": [
                 "straight hair",
                 "long voluminous waves",
-                "layered",
-                "asymmetrical, straight hair"
+                "layered"
             ]
         },
         "does": [
@@ -56,21 +54,21 @@
         "haircut": {
             "short": [
                 "asymmetrical feathered pixie",
-                "pixie-bob",
+                "pixie bob",
                 "stacked bob",
-                "bob with long strands in the front, straight hair"
+                "bob with long strands in the front straight hair"
             ],
             "medium": [
-                "blunt bangs, wavy layers",
-                "chin-length bob with bangs, straight hair",
-                "stacked bob",
-                "a-line bob, straight hair",
-                "layered",
+                "blunt bangs wavy layers",
+                "chin-length bob with bangs straight hair",
+                "stacked bob straight hair",
+                "a-line bob straight hair",
+                "layered bob",
                 "wave-bob"
             ],
             "long": [
                 "layered",
-                "blunt bangs, wavy layers"
+                "blunt bangs wavy layers"
             ]
         },
         "does": [
@@ -92,7 +90,7 @@
         ],
         "haircut": {
             "short": [
-                "pixie-bob with side-swept chin-length bangs"
+                "pixie bob with side-swept chin-length bangs"
             ],
             "medium": [
                 "wavy shags with wispy fringe",
@@ -117,12 +115,12 @@
         ],
         "haircut": {
             "short": [
-                "side-swept pixie-bob"
+                "side-swept pixie bob"
             ],
             "medium": [
-                "wavy",
+                "wave-bob",
                 "layered bob",
-                "square bob"
+                "chin-length bob straight hair blunt"
             ],
             "long": [
                 "layered"
@@ -148,7 +146,7 @@
             "medium": [
                 "soft waves",
                 "wave-bob",
-                "long bob",
+                "long bob straight hair",
                 "shaggy bob",
                 "chin-length bob"
             ],

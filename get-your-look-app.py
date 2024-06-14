@@ -8,9 +8,9 @@ import tensorflow as tf
 import cv2
 import requests
 from google_images_search import GoogleImagesSearch
-# from google_images_search.fetch_resize_save import GSImage
-# from glob import glob
-# from random import choice
+import imutils
+
+
 
 from streamlit_javascript import st_javascript
 from user_agents import parse
@@ -26,7 +26,7 @@ st.set_page_config(
 st.title('Get haircut recommendations')
 
 top = st.container()
-border_left, left_column, right_column, border_right = st.columns([1, 2, 3, 1])
+left_column, right_column, border_right = st.columns([5, 3, 1])
 bottom = st.container()
 
 ############################################################
@@ -192,7 +192,7 @@ def load_gis():
     return GoogleImagesSearch(API_KEY, SE_KEY)
 
 @st.cache_data(show_spinner=False)
-def gis(query, num=2):
+def gis(query, num=1):
     """search for images with custom image google search API
 
     Args:
@@ -203,7 +203,7 @@ def gis(query, num=2):
         list: list of images with urls and ref_urls
     """
     
-    gis = load_gis()
+    # gis = load_gis()
     search_params = {
         'q': query + 'haircut',
         'num': num,
@@ -213,21 +213,34 @@ def gis(query, num=2):
         # 'imgSize': 'small', ##
         'imgColorType': 'color' ##
     }
-    try:
-        gis.search(search_params=search_params)
-        return gis.results()
-    except :
-        return None
+    # try:
+    #     gis.search(search_params=search_params)
+    #     return gis.results()
+    # except :
+    #     return None
 
 
     # for test purposes, so not to exceed API limits
-    # test_images = []
-    # for _ in range(num):
-    #     test_image = GSImage(gis)
-    #     test_image.url = choice(glob(f'face_shape/test_images/*.jpg'))
-    #     test_image.referrer_url = 'nfnfbfb'
-    #     test_images.append(test_image)
-    # return test_images
+    from google_images_search.fetch_resize_save import GSImage
+    from glob import glob
+    from random import choice
+    test_images = []
+    for _ in range(num):
+        test_image = GSImage(gis)
+        test_image.url = choice(glob(f'face_shape/test_images/*.jpg'))
+        test_image.referrer_url = 'nfnfbfb'
+        test_images.append(test_image)
+    return test_images
+
+def make_gis_link(cut,q):
+    return '<a href="https://www.google.com/search?q=' + q + '&tbm=isch">' + cut + '</a>'
+
+@st.cache_data
+def load_resized_image(length, cut, width, height):
+    image_path = "/".join(['hair_cut','images', length, cut +'.jpg'])
+    img = cv2.imread(image_path)   # reads an image in the BGR format
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return imutils.resize(img, width=width)
 
 def main():
 
@@ -251,8 +264,19 @@ def main():
         st.session_state.display_result=False
         st.session_state.uploaded_file = None
         
-    def btn_a_callback():
+    def btn_upload_callback():
         st.session_state.display_result = True
+        st.session_state.uploaded_file = st.session_state.upload
+
+    def btn_photo_callback():
+        st.session_state.display_result = True
+        st.session_state.uploaded_file = st.session_state.photo
+
+    def get_photo(img_file, key):
+        bytes_data = img_file.getvalue()
+        cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+        face_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+        st.session_state[key] = face_img
 
     # wait before nn model is loaded
     # only after load everything else
@@ -261,18 +285,21 @@ def main():
     # show the possibility to upload image file
     # and after successful upload - show button
     if not st.session_state.display_result:
-        file1 = right_column.file_uploader("Upload an image", type=['png', 'jpg'])
-        # right_column.markdown("... or just ... ")
-        # file2 = left_column.camera_input("Take a picture")
-        uploaded_file = file1 #if file1 else file2
-        if uploaded_file is not None:
-            bytes_data = uploaded_file.getvalue()
-            cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-            face_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
-            st.session_state.uploaded_file = face_img
-            button_a = left_column.button('Get recommendations', on_click=btn_a_callback, type='primary')
-            left_column.image(face_img)
-            
+        with top:
+            tab1, tab2 = st.tabs(['Use a camera', 'Upload an image'])
+
+            tab1_column1, tab1_column2 = tab1.columns(2)
+            photo = tab1_column1.camera_input(label_visibility = "collapsed", label='')
+            if photo:
+                get_photo(photo, 'photo')
+                button_a = tab1_column2.button('Get recommendations', on_click=btn_photo_callback, type='primary', key='but_photo')
+
+            tab2_column1, tab2_column2 = tab2.columns(2)
+            image = tab2_column1.file_uploader(label_visibility = "collapsed", type=['png', 'jpg'], label='')
+            if image:
+                get_photo(image, 'upload')
+                tab2_column1.image(st.session_state.upload)
+                button_a = tab2_column2.button('Get recommendations', on_click=btn_upload_callback, type='primary', key='but_upload')            
 
     # when button 'Get recommendations' is pressed
     # hide upload content and show only recommendations content
@@ -286,46 +313,43 @@ def main():
 
                 with st.spinner('Your faceshape is analysed...'):
                     if st.session_state.is_session_pc:
-                        left_column.image(face_img)
-                        num_of_images = 5
-                    else:
-                        num_of_images = 1                                                        
+                        left_column.image(face_img)                                          
                     recommendations = recommend(model, face_img)
                     button_b = top.button('Reset', on_click=btn_b_callback, type='primary')
     
                 if recommendations is not None:
                     # format recommendations in the botom section
-                    top.subheader(f"Congratulations! You have a {recommendations['faceShape']} shape!", divider='rainbow')
+                    top.subheader(f"Congratulations! Your faceshape is {recommendations['faceShape']}!", divider='rainbow')
                     does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
-                    right_column.success(does)
+                    left_column.success(does)
                     donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
-                    right_column.error(donts)
-                    right_column.info('#### Your recommended haircuts :arrow_down:')
+                    left_column.error(donts)
+                    left_column.info('#### Your recommended haircuts :arrow_down:')
 
                     # compose google images in rows for each hair-cut
                     for length, cuts in recommendations['haircut'].items():
                         bottom.divider()
                         bottom.subheader(length.title() + ' length')
-                        for cut in cuts:
-                            hair_cut_images = gis(cut + length.title() + ' length', num_of_images)
-                            image_columns = bottom.columns(num_of_images+1)
-                            bottom.write(
-                                """<style>
-                                [data-testid="stHorizontalBlock"] {
-                                    align-items: center;
-                                }
-                                </style>
-                                """,
-                                unsafe_allow_html=True
-                            )
-                            if hair_cut_images is not None:
-                                for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
-                                    column.image(hair_cut.url, use_column_width="always")
-                                    column.caption('[source]('+ hair_cut.referrer_url +')')
-                            else:
-                                bottom.error('Google Custom API Search query quota has reached its limits')
-                            image_columns[0].markdown('##### '+cut)
+                        
+                        # image_columns = bottom.columns(len(cuts))
+                        # for cut,column in zip(cuts, image_columns):
+                        q = ' ' + length.title() + ' length'
+                        hair_cut_images = [gis(cut + q)[0] for cut in cuts]
+                        # urls = [image.url for image in hair_cut_images]
+                        im_width = 350
+                        images = [load_resized_image(length, cut, im_width, 450) for cut in cuts]
+                        captions = [cut for cut in cuts]
+                        bottom.image(images, width=im_width, caption=captions)
                             
+                            # 
+                                # for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
+                                    
+                            
+                            # image_columns[0].markdown('##### '+cut)
+                            
+
+
+# https://www.latest-hairstyles.com/
            
 
 if __name__ == "__main__":

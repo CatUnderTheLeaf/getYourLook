@@ -8,3 +8,4 @@ streamlit==1.35.0
 streamlit_javascript==0.1.5
 tensorflow==2.16.1
 user_agents==2.2.0
+imutils
