@@ -291,7 +291,7 @@ def main():
                         bottom.divider()
                         bottom.subheader(length.title() + ' length')
                         im_width = 350
-                        images = [load_resized_image(length, cut, im_width, 450) for cut in cuts]
+                        images = [load_resized_image(length, cut, im_width) for cut in cuts]
                         captions = [cut for cut in cuts]
                         bottom.image(images, width=im_width, caption=captions)
                             

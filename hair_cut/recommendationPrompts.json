@@ -90,21 +90,32 @@
         ],
         "haircut": {
             "short": [
-                "pixie bob with side-swept chin-length bangs"
+                "pixie bob with side-swept chin-length bangs",
+                "pixie bob"
             ],
             "medium": [
                 "wavy shags with wispy fringe",
-                "wavy shags with soft side-swept bangs"
+                "wavy shags with soft side-swept bangs",
+                "asymmetrical bob straight hair",
+                "wave-bob",
+                "shaggy bob",
+                "soft waves"
             ],
             "long": [
-                "layered with fringe"
+                "layered with fringe",
+                "face-framing layers",
+                "straight hair",
+                "long voluminous waves"
             ]
         },
         "does": [
-            "Hairstyles that are fuller at the sides and that soften the corners are best"
+            "Hairstyles that are fuller at the sides and that soften the corners are best",
+            "Add height on top and narrow sides",
+            "Consider a side-swept fringe"
         ],
         "donts": [
             "Avoid enhancing the jawline further with blunt lines",
+            "Avoid volume at the widest part of your face",
             "Strong fringe is not recommended either"
         ]
     },
@@ -115,22 +126,31 @@
         ],
         "haircut": {
             "short": [
+                "pixie bob",
+                "crew cut pixie",
+                "pixie bob with side-swept chin-length bangs",
                 "side-swept pixie bob"
             ],
             "medium": [
                 "wave-bob",
                 "layered bob",
+                "wavy shags with wispy fringe",
                 "chin-length bob straight hair blunt"
             ],
             "long": [
-                "layered"
+                "layered",
+                "long voluminous waves",
+                "layered with fringe"
             ]
         },
         "does": [
-            "Choose styles that will enhance your key features"
+            "Choose styles that will enhance your key features",
+            "With their balanced proportions and versatile nature, oval faces have the advantage of being able to pull off a wide range of hairstyles with ease."
         ],
         "donts": [
-            "Steer clear of too much height on top since that can make this shape feel oblong"
+            "Steer clear of too much height on top since that can make this shape feel oblong",
+            "The ultra-short length of micro bangs can disrupt the balanced proportions that characterise oval faces, potentially creating too harsh of a contrast",
+            "Very long, straight hair tends not to be very flattering for oval faces. The length of the hair can elongate the face shape, creating a potential imbalance"
         ]
     },
     "oblong": {
@@ -148,7 +168,9 @@
                 "wave-bob",
                 "long bob straight hair",
                 "shaggy bob",
-                "chin-length bob"
+                "chin-length bob",
+                "layered bob",
+                "wavy shags with soft side-swept bangs"
             ],
             "long": [
                 "face-framing layers"
@@ -160,7 +182,8 @@
             "Long layers and angles add movement and texture to the hair"
         ],
         "donts": [
-            "Flat, straight hair with no movement and volume with no width should be avoided"
+            "Flat, straight hair with no movement and volume with no width should be avoided",
+            "Avoid having your hair too long. The longer the hair, the more it will lengthen your face more than it already is"
         ]
     }
 }
