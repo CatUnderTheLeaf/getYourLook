@@ -180,67 +180,27 @@ def recommend(model, face_img):
     else:
         return None
 
-@st.cache_resource
-def load_gis():
-    """load custom google search API only once
-
-    Returns:
-        GoogleImagesSearch: google search object
-    """        
-    API_KEY = st.secrets["GoogleAPI_key"]
-    SE_KEY = st.secrets["SE_key"]
-    return GoogleImagesSearch(API_KEY, SE_KEY)
-
-@st.cache_data(show_spinner=False)
-def gis(query, num=1):
-    """search for images with custom image google search API
+@st.cache_data
+def load_resized_image(length, cut, width):
+    """load image with a white border as padding
 
     Args:
-        query (str): hair cut recommendation text prompt
-        num (int, optional): number of images. Defaults to 2.
+        length (str): haircut length
+        cut (str): haircut name
+        width (int): width of the image
 
     Returns:
-        list: list of images with urls and ref_urls
+        ndarray: image with a border
     """
-    
-    # gis = load_gis()
-    search_params = {
-        'q': query + 'haircut',
-        'num': num,
-        # 'fileType': 'jpg|gif|png',
-        # 'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived', #cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived
-        # 'safe': 'active', ##
-        # 'imgSize': 'small', ##
-        'imgColorType': 'color' ##
-    }
-    # try:
-    #     gis.search(search_params=search_params)
-    #     return gis.results()
-    # except :
-    #     return None
-
-
-    # for test purposes, so not to exceed API limits
-    from google_images_search.fetch_resize_save import GSImage
-    from glob import glob
-    from random import choice
-    test_images = []
-    for _ in range(num):
-        test_image = GSImage(gis)
-        test_image.url = choice(glob(f'face_shape/test_images/*.jpg'))
-        test_image.referrer_url = 'nfnfbfb'
-        test_images.append(test_image)
-    return test_images
-
-def make_gis_link(cut,q):
-    return '<a href="https://www.google.com/search?q=' + q + '&tbm=isch">' + cut + '</a>'
-
-@st.cache_data
-def load_resized_image(length, cut, width, height):
-    image_path = "/".join(['hair_cut','images', length, cut +'.jpg'])
+    image_path = "/".join(['hair_cut','gen_images', length, cut +'.png'])
     img = cv2.imread(image_path)   # reads an image in the BGR format
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    return imutils.resize(img, width=width)
+    # resize image with the same aspect ratio
+    resized_image = imutils.resize(img, width=width)
+    # add border/padding
+    top, bottom, left, right = [10]*4
+    img_with_border = cv2.copyMakeBorder(resized_image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[255,255,255])
+    return img_with_border
 
 def main():
 
@@ -289,13 +249,13 @@ def main():
             tab1, tab2 = st.tabs(['Use a camera', 'Upload an image'])
 
             tab1_column1, tab1_column2 = tab1.columns(2)
-            photo = tab1_column1.camera_input(label_visibility = "collapsed", label='')
+            photo = tab1_column1.camera_input(label_visibility = "collapsed", label='camera input')
             if photo:
                 get_photo(photo, 'photo')
                 button_a = tab1_column2.button('Get recommendations', on_click=btn_photo_callback, type='primary', key='but_photo')
 
             tab2_column1, tab2_column2 = tab2.columns(2)
-            image = tab2_column1.file_uploader(label_visibility = "collapsed", type=['png', 'jpg'], label='')
+            image = tab2_column1.file_uploader(label_visibility = "collapsed", type=['png', 'jpg'], label='upload picture')
             if image:
                 get_photo(image, 'upload')
                 tab2_column1.image(st.session_state.upload)
@@ -326,30 +286,18 @@ def main():
                     left_column.error(donts)
                     left_column.info('#### Your recommended haircuts :arrow_down:')
 
-                    # compose google images in rows for each hair-cut
+                    # compose images in rows for each hair-cut
                     for length, cuts in recommendations['haircut'].items():
                         bottom.divider()
                         bottom.subheader(length.title() + ' length')
-                        
-                        # image_columns = bottom.columns(len(cuts))
-                        # for cut,column in zip(cuts, image_columns):
-                        q = ' ' + length.title() + ' length'
-                        hair_cut_images = [gis(cut + q)[0] for cut in cuts]
-                        # urls = [image.url for image in hair_cut_images]
                         im_width = 350
                         images = [load_resized_image(length, cut, im_width, 450) for cut in cuts]
                         captions = [cut for cut in cuts]
                         bottom.image(images, width=im_width, caption=captions)
                             
-                            # 
-                                # for hair_cut,column in zip(hair_cut_images, image_columns[1:]):
-                                    
-                            
-                            # image_columns[0].markdown('##### '+cut)
+            bottom.markdown('Images were created with [stability-ai](https://replicate.com/stability-ai/sdxl)')
                             
 
-
-# https://www.latest-hairstyles.com/
            
 
 if __name__ == "__main__":

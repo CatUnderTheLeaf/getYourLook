@@ -13,8 +13,7 @@
                 "asymmetrical pixie",
                 "undercut pixie",
                 "mohawk pixie",
-                "crew cut pixie",
-                "chin-length bob straight hair blunt"                
+                "crew cut pixie"               
             ],
             "medium": [
                 "a-line bob straight hair",
@@ -23,7 +22,8 @@
                 "asymmetrical bob straight hair",
                 "shaggy bob",
                 "long bob straight hair",
-                "layered bob"
+                "layered bob",
+                "chin-length bob straight hair blunt" 
             ],
             "long": [
                 "straight hair",
