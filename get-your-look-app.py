@@ -7,13 +7,8 @@ from mtcnn import MTCNN
 import tensorflow as tf
 import cv2
 import requests
-from google_images_search import GoogleImagesSearch
 import imutils
 
-
-
-from streamlit_javascript import st_javascript
-from user_agents import parse
 
 # make a wide layout, not with a fixed width in the center 
 st.set_page_config(
@@ -26,7 +21,7 @@ st.set_page_config(
 st.title('Get haircut recommendations')
 
 top = st.container()
-left_column, right_column, border_right = st.columns([5, 3, 1])
+left_column, right_column = st.columns([1, 3])
 bottom = st.container()
 
 ############################################################
@@ -203,14 +198,6 @@ def load_resized_image(length, cut, width):
     return img_with_border
 
 def main():
-
-    if 'is_session_pc' not in st.session_state:
-        try:
-            ua_string = st_javascript("""window.navigator.userAgent;""")
-            user_agent = parse(ua_string)
-            st.session_state.is_session_pc = user_agent.is_pc
-        except:
-            st.session_state.is_session_pc = False
     
     if 'uploaded_file' not in st.session_state:
         st.session_state.uploaded_file = None
@@ -271,32 +258,37 @@ def main():
 
                 recommendations = None
 
-                with st.spinner('Your faceshape is analysed...'):
-                    if st.session_state.is_session_pc:
-                        left_column.image(face_img)                                          
+                with st.spinner('Your faceshape is analysed...'):                    
                     recommendations = recommend(model, face_img)
                     button_b = top.button('Reset', on_click=btn_b_callback, type='primary')
     
                 if recommendations is not None:
                     # format recommendations in the botom section
-                    top.subheader(f"Congratulations! Your faceshape is {recommendations['faceShape']}!", divider='rainbow')
-                    does = '#### Do\'s\n\n'+('\n\n').join(recommendations['does'])
-                    left_column.success(does)
-                    donts = '#### Don\'ts\n\n'+('\n\n').join(recommendations['donts'])
-                    left_column.error(donts)
-                    left_column.info('#### Your recommended haircuts :arrow_down:')
+                    top.subheader(f"Congratulations! Your faceshape is {recommendations['faceShape'].upper()}!", divider='rainbow')
+                    left_column.image('/'.join(['hair_cut', 'images', recommendations['faceShape']+'.jpg']), use_column_width=True)
+                    with right_column:
+                        does, donts = st.tabs(['#### :green-background[Do\'s:]', '#### :red-background[Don\'ts:]'])
+                        does.success(('\n\n').join(recommendations['does']))
+                        donts.error(('\n\n').join(recommendations['donts']))
 
+                    bottom.subheader('Your recommended haircuts:')
                     # compose images in rows for each hair-cut
                     for length, cuts in recommendations['haircut'].items():
-                        bottom.divider()
-                        bottom.subheader(length.title() + ' length')
-                        im_width = 350
+                        expander = bottom.expander('##### ' + length.title() + ' length')                        
+                        im_width = 285
                         images = [load_resized_image(length, cut, im_width) for cut in cuts]
                         captions = [cut for cut in cuts]
-                        bottom.image(images, width=im_width, caption=captions)
-                            
-            bottom.markdown('Images were created with [stability-ai](https://replicate.com/stability-ai/sdxl)')
-                            
+                        expander.image(images, width=im_width, caption=captions)                          
+            
+            with bottom.popover("__Next features:__ "):
+                st.write('''
+                         - sun-glasses shape
+                         - men haircuts
+                         - hair type is considered
+                         - apply style to the photo 
+                         - color palette recommendation''')
+
+            bottom.markdown('Images were created with [stability-ai](https://replicate.com/stability-ai/sdxl)')                
 
            
 

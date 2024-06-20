@@ -1,11 +1,8 @@
-Google_Images_Search==1.4.6
 keras==3.3.3
 mtcnn==0.1.1
 numpy==1.26.4
 opencv-python-headless
 Requests==2.32.3
 streamlit==1.35.0
-streamlit_javascript==0.1.5
 tensorflow==2.16.1
-user_agents==2.2.0
 imutils
