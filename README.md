@@ -1,4 +1,4 @@
-# [getYourLook](https://getyourlook.streamlit.app/)
+# [getyourlook.streamlit.app](https://getyourlook.streamlit.app/)
 
 Here is a Minimal Viable Product - a simple WebApp where user can take/upload photo and recieve haircut recommendations.
 ![app](/hair_cut/images/haircutrec.png)
