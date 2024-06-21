@@ -16,7 +16,7 @@ The preprocessing method includes three stages:
 - __face cropping__ - the face area is cropped into a square face image
 - __image scaling__ - all the cropped images are resized to 150px x 150px, which is the input size for the neural network (in my implementation this stage goes during loading of the dataset)
 
-![Preprocessing](/images/preprocess.png)
+![Preprocessing](/face_shape/images/preprocess.png)
 
 The goal of this is to achieve better classification performance with elimination of background and other noise in an image.
 
@@ -32,7 +32,7 @@ The augmentation method increases the number of images in the dataset while maki
 - horizontal image mirroring
 - changing the contrast of an image for gamma value of 2
 
-![Data augmentation](/images/augment.png)
+![Data augmentation](/face_shape/images/augment.png)
 
 ## Load dataset
 
@@ -93,11 +93,11 @@ I trained this model in three stages:
 - __fine tune the 7th stage__ - unfreeze the 7th stage of the EfficientNetV2S and trained it for 169 epochs. Test accuracy is 0.903, loss is 0.2863
 - __fine tune the 6th and the 7th stages__ - unfreeze the 6th and the 7th stages of the EfficientNetV2S and trained it for 43 epochs. Test accuracy is 0.9736, loss is 0.0973
 
-![Model fitting and fine-tuning](/images/acc_loss.png)
+![Model fitting and fine-tuning](/face_shape/images/acc_loss.png)
 
 ## Prediction
 
-![Model prediction](/images/prediction.png)
+![Model prediction](/face_shape/images/prediction.png)
 
 [^1]: [Grd P, Tomičić I, Barčić E (2024) Transfer Learning with EfficientNetV2S for Automatic Face Shape Classification. JUCS - Journal of Universal Computer Science 30(2): 153-178.](https://doi.org/10.3897/jucs.104490)
 
